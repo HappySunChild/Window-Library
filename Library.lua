@@ -36,8 +36,9 @@ configBase.__index = configBase
 
 local windowC = {}
 windowC.BaseSize = UDim2.new(0, 600, 0, 350)
+windowC.ComponentDragging = false
 
-function windowC.new(title: string, theme: Color3?, animate: boolean?)
+function windowC.new(title: string, toggleKeybind: Enum.KeyCode, animate: boolean?)
 	-- Base Gui --
 	
 	local Gui = Instance.new("ScreenGui")
@@ -48,11 +49,20 @@ function windowC.new(title: string, theme: Color3?, animate: boolean?)
 	local UIListLayout = Instance.new("UIListLayout")
 	local TabItems = Instance.new("Frame")
 	local Padding = Instance.new("UIPadding")
-
+	local Scale = Instance.new("UIScale")
+	
+	local seed = 0
+	
+	for i, byte in pairs({string.byte(title, 1, title:len())}) do
+		seed += byte
+	end
+	
+	math.randomseed(seed)
+	
 	Gui.Name = RandomString()
 	Gui.Parent = CoreGui
 	Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	Gui.DisplayOrder = 2^32
+	Gui.DisplayOrder = 16^6
 	Gui.ResetOnSpawn = false
 
 	Main.Name = "Main"
@@ -108,17 +118,56 @@ function windowC.new(title: string, theme: Color3?, animate: boolean?)
 	Padding.PaddingRight = UDim.new(0, 4)
 	Padding.PaddingTop = UDim.new(0, 5)
 	
+	Scale.Name = "Scale"
+	Scale.Parent = Main
+	Scale.Scale = 1
+	
 	if animate then
 		Spawner(function()
-			TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = UDim2.new(0, 3, 0, windowC.BaseSize.Y.Offset)}):Play()
+			TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = UDim2.new(0, 1, 0, windowC.BaseSize.Y.Offset)}):Play()
 			task.wait(0.5)
 			TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = windowC.BaseSize}):Play()
 		end)
+	else
+		Main.Size = windowC.BaseSize
 	end
 	
 	local window = {}
-	window.Src = Gui
+	window.Menu = Gui
 	window.Tabs = {}
+	window.Dragging = false
+	window.WindowDragStart = Main.Position
+	window.WindowScaleStart = Scale.Scale
+	window.MouseDragStart = Vector2.zero
+	window.DragConnection = RunService.RenderStepped:Connect(function(dt)
+		if window.Dragging and not windowC.ComponentDragging then
+			if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+				-- adjust scale
+				local mousePos = UserInputService:GetMouseLocation()
+				local scale = (mousePos.X - window.MouseDragStart.X) / 1000 + window.WindowScaleStart
+				
+				Scale.Scale = scale
+			else
+				local delta = UserInputService:GetMouseLocation() - window.MouseDragStart
+				TweenService:Create(Main, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {Position = window.WindowDragStart + UDim2.fromOffset(delta.X, delta.Y)}):Play()
+			end
+		end
+	end)
+	
+	Main.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			window.WindowDragStart = Main.Position
+			window.MouseDragStart = UserInputService:GetMouseLocation()
+			window.WindowScaleStart = Scale.Scale
+			window.Dragging = true
+		end
+	end)
+	
+	Main.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			window.Dragging = false
+		end
+	end)
 	
 	function window:AddTab(name: string)
 		local TabButton = Instance.new("TextButton")
@@ -206,6 +255,7 @@ function windowC.new(title: string, theme: Color3?, animate: boolean?)
 	
 	function window:Destroy()
 		Debris:AddItem(Gui, 0)
+		window.DragConnection:Disconnect()
 	end
 	
 	return window
@@ -297,6 +347,8 @@ function configBase:AddSlider(name: string, min: number, max: number, default: n
 	
 	Slider.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			windowC.ComponentDragging = true
+			
 			connection = RunService.RenderStepped:Connect(function(dt)
 				local position = UserInputService:GetMouseLocation()
 				local delta = math.clamp((position.X - Slider.AbsolutePosition.X) / Slider.AbsoluteSize.X, 0, 1)
@@ -313,6 +365,8 @@ function configBase:AddSlider(name: string, min: number, max: number, default: n
 	
 	Slider.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			windowC.ComponentDragging = false
+			
 			connection:Disconnect()
 		end
 	end)
@@ -439,6 +493,19 @@ function configBase:AddTextbox(name: string, callback: (string) -> nil)
 	table.insert(self.Elements, textbox)
 	
 	return textbox
+end
+
+function configBase:InsertCustomGui(gui: GuiBase) -- basically the same as reparenting straight to self.Menu
+	gui.Parent = self.Menu
+	
+	local connection
+	connection = gui:GetPropertyChangedSignal("Parent"):Connect(function()
+		connection:Disconnect()
+		
+		table.remove(self.Elements, table.find(self.Elements, gui))
+	end)
+	
+	table.insert(self.Elements, gui)
 end
 
 function configBase:AddSection(name: string, position: UDim2, size: UDim2)
