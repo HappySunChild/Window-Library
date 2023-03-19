@@ -38,7 +38,7 @@ local windowC = {}
 windowC.BaseSize = UDim2.new(0, 600, 0, 350)
 windowC.ComponentDragging = false
 
-function windowC.new(title: string, toggleKeybind: Enum.KeyCode, animate: boolean?)
+function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boolean?)
 	-- Base Gui --
 	
 	local Gui = Instance.new("ScreenGui")
@@ -122,19 +122,10 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode, animate: boolea
 	Scale.Parent = Main
 	Scale.Scale = 1
 	
-	if animate then
-		Spawner(function()
-			TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = UDim2.new(0, 1, 0, windowC.BaseSize.Y.Offset)}):Play()
-			task.wait(0.5)
-			TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = windowC.BaseSize}):Play()
-		end)
-	else
-		Main.Size = windowC.BaseSize
-	end
-	
 	local window = {}
 	window.Menu = Gui
 	window.Tabs = {}
+	window.IsOpen = true
 	window.Dragging = false
 	window.WindowDragStart = Main.Position
 	window.WindowScaleStart = Scale.Scale
@@ -151,6 +142,12 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode, animate: boolea
 				local delta = UserInputService:GetMouseLocation() - window.MouseDragStart
 				TweenService:Create(Main, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {Position = window.WindowDragStart + UDim2.fromOffset(delta.X, delta.Y)}):Play()
 			end
+		end
+	end)
+	
+	window.InputBeginConnection = UserInputService.InputBegan:Connect(function(input)
+		if input.KeyCode == toggleKeybind then
+			Main.Visible = not Main.Visible
 		end
 	end)
 	
@@ -256,7 +253,38 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode, animate: boolea
 	function window:Destroy()
 		Debris:AddItem(Gui, 0)
 		window.DragConnection:Disconnect()
+		window.InputBeginConnection:Disconnect()
 	end
+	
+	function window:Open()
+		window.IsOpen = true
+
+		if animate then
+			Spawner(function()
+				TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = UDim2.new(0, 1, 0, windowC.BaseSize.Y.Offset)}):Play()
+				task.wait(0.5)
+				TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = windowC.BaseSize}):Play()
+			end)
+		else
+			Main.Size = windowC.BaseSize
+		end
+	end
+
+	function window:Close()
+		window.IsOpen = false
+
+		if animate then
+			Spawner(function()
+				TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = UDim2.new(0, 1, 0, windowC.BaseSize.Y.Offset)}):Play()
+				task.wait(0.5)
+				TweenService:Create(Main, TweenInfo.new(0.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.InOut), {Size = UDim2.fromOffset(1, 1)}):Play()
+			end)
+		else
+			Main.Size = UDim2.fromOffset(1, 1)
+		end
+	end
+	
+	window:Open()
 	
 	return window
 end
