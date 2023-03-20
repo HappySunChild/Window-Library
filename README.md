@@ -1,4 +1,4 @@
-# WinLib
+# _WinLib_
 
 An open source library that allows easy creation and customization of a gui!
 
