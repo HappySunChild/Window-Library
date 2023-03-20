@@ -13,4 +13,4 @@ local window = winLib.new([[window title here]])
 ```
 
 ## Documentation
-still working on it
+https://github.com/HappySunChild/Window-Library/blob/main/docs.md
