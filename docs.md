@@ -1,2 +1,2 @@
-# DOCS
+# Documentation
 not done yet
