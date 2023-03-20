@@ -2,7 +2,7 @@
 
 An open source library that allows easy creation and customization of a gui!
 
-## Usage
+## __Usage__
 Using it is very simple and allows for easy manipulation of the gui.
 
 ```lua
@@ -12,5 +12,5 @@ local winLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/HappyS
 local window = winLib.new([[window title here]])
 ```
 
-## Documentation
+## __Documentation__
 https://github.com/HappySunChild/Window-Library/blob/main/docs.md
