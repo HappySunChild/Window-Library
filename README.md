@@ -13,4 +13,4 @@ local window = winLib.new([[window title here]])
 ```
 
 ## __Documentation__
-https://github.com/HappySunChild/Window-Library/blob/main/docs.md
+[Documentation here!](https://github.com/HappySunChild/Window-Library/blob/main/docs.md)
