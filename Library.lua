@@ -33,6 +33,8 @@ end
 
 local configBase = {}
 configBase.__index = configBase
+configBase.Menu = nil
+configBase.Elements = {}
 
 local windowC = {}
 windowC.BaseSize = UDim2.new(0, 600, 0, 350)
@@ -202,7 +204,6 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 		
 		local self = setmetatable({}, configBase)
 		self.Menu = TabMenu
-		self.Elements = {}
 		self.Selected = false
 		self.Sectioned = false
 		
