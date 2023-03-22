@@ -250,6 +250,8 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 
 		if #window.Tabs == 0 then
 			self:Select()
+		else
+			self:Deselect()
 		end
 
 		table.insert(window.Tabs, self)
