@@ -9,11 +9,11 @@ local Debris = game:GetService("Debris")
 
 local function RandomString()
 	local str = ""
-	
+
 	for i = 1, math.random(28, 36) do
 		str = str .. string.char(math.random(28, 128))
 	end
-	
+
 	return str
 end
 
@@ -23,7 +23,7 @@ local function GetTextBounds(text)
 	params.Width = math.huge
 	params.Font = Font.fromEnum(Enum.Font.SourceSans)
 	params.Text = text
-	
+
 	return TextService:GetTextBoundsAsync(params)
 end
 
@@ -42,7 +42,7 @@ windowC.ComponentDragging = false
 
 function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boolean?)
 	-- Base Gui --
-	
+
 	local Gui = Instance.new("ScreenGui")
 	local Main = Instance.new("Frame")
 	local Title = Instance.new("TextLabel")
@@ -52,16 +52,22 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 	local TabItems = Instance.new("Frame")
 	local Padding = Instance.new("UIPadding")
 	local Scale = Instance.new("UIScale")
-	
+
 	local seed = 0
-	
+
 	for i, byte in pairs({string.byte(title, 1, title:len())}) do
 		seed += byte
 	end
-	
+
 	math.randomseed(seed)
 	
-	Gui.Name = RandomString()
+	local name = RandomString()
+	
+	if CoreGui:FindFirstChild(name) then
+		CoreGui[name]:Destroy()
+	end
+	
+	Gui.Name = name
 	Gui.Parent = CoreGui
 	Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	Gui.DisplayOrder = 16^6
@@ -119,11 +125,11 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 	Padding.PaddingLeft = UDim.new(0, 4)
 	Padding.PaddingRight = UDim.new(0, 4)
 	Padding.PaddingTop = UDim.new(0, 5)
-	
+
 	Scale.Name = "Scale"
 	Scale.Parent = Main
 	Scale.Scale = 1
-	
+
 	local window = {}
 	window.Menu = Gui
 	window.Tabs = {}
@@ -138,7 +144,7 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 				-- adjust scale
 				local mousePos = UserInputService:GetMouseLocation()
 				local scale = (mousePos.X - window.MouseDragStart.X) / 1000 + window.WindowScaleStart
-				
+
 				Scale.Scale = scale
 			else
 				local delta = UserInputService:GetMouseLocation() - window.MouseDragStart
@@ -146,13 +152,13 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 			end
 		end
 	end)
-	
+
 	window.InputBeginConnection = UserInputService.InputBegan:Connect(function(input)
 		if input.KeyCode == toggleKeybind then
 			Main.Visible = not Main.Visible
 		end
 	end)
-	
+
 	Main.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			window.WindowDragStart = Main.Position
@@ -161,17 +167,17 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 			window.Dragging = true
 		end
 	end)
-	
+
 	Main.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			window.Dragging = false
 		end
 	end)
-	
+
 	function window:AddTab(name: string)
 		local TabButton = Instance.new("TextButton")
 		local TabMenu = Instance.new("Frame")
-		
+
 		TabButton.Parent = TabScroll
 		TabButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
 		TabButton.BorderSizePixel = 0
@@ -190,73 +196,73 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 		TabMenu.BackgroundTransparency = 1.000
 		TabMenu.BorderSizePixel = 0
 		TabMenu.Size = UDim2.new(1, 0, 1, 0)
-		
+
 		Spawner(function() -- animate
 			task.wait(#window.Tabs * 0.05)
-			
+
 			local animation = TweenService:Create(TabButton, TweenInfo.new(0.8, Enum.EasingStyle.Quint), {Size = UDim2.new(0, GetTextBounds(name).X + 10, 1, 0)})
 			animation:Play()
-			
+
 			animation.Completed:Connect(function()
 				TabScroll.CanvasSize = UDim2.fromOffset(UIListLayout.AbsoluteContentSize.X, 0)
 			end)
 		end)
-		
+
 		local self = setmetatable({}, configBase)
 		self.Menu = TabMenu
 		self.Selected = false
 		self.Sectioned = false
-		
+
 		function self:Select()
 			self.Selected = true
 			TabMenu.Visible = true
 			Title.Text = string.format("%s - %s", title, name)
-			
+
 			TweenService:Create(TabButton, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {BackgroundColor3 = Main.BackgroundColor3}):Play()
-			
+
 			for i, otab in pairs(window.Tabs) do
 				if otab ~= self then
 					otab:Deselect()
 				end
 			end
 		end
-		
+
 		function self:Deselect()
 			self.Selected = false
 			TabMenu.Visible = false
-			
+
 			TweenService:Create(TabButton, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
 		end
-		
+
 		TabButton.MouseEnter:Connect(function() -- enter
 			TweenService:Create(TabButton, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {BackgroundColor3 = Color3.new(0.309804, 0.309804, 0.309804)}):Play()
 		end)
-		
+
 		TabButton.MouseLeave:Connect(function()
 			TweenService:Create(TabButton, TweenInfo.new(0.1, Enum.EasingStyle.Quint), {BackgroundColor3 = self.Selected and Main.BackgroundColor3 or Color3.fromRGB(45, 45, 45)}):Play()
 		end)
-		
+
 		TabButton.MouseButton1Click:Connect(function()
 			self:Select()
 		end)
-		
+
 		-- select first tab
-		
+
 		if #window.Tabs == 0 then
 			self:Select()
 		end
-		
+
 		table.insert(window.Tabs, self)
-		
+
 		return self
 	end
-	
+
 	function window:Destroy()
 		Debris:AddItem(Gui, 0)
 		window.DragConnection:Disconnect()
 		window.InputBeginConnection:Disconnect()
 	end
-	
+
 	function window:Open()
 		window.IsOpen = true
 
@@ -284,9 +290,9 @@ function windowC.new(title: string, toggleKeybind: Enum.KeyCode?, animate: boole
 			Main.Size = UDim2.fromOffset(1, 1)
 		end
 	end
-	
+
 	window:Open()
-	
+
 	return window
 end
 
@@ -318,12 +324,12 @@ function configBase:AddButton(text: string, callback: () -> nil)
 	Button.MouseButton1Click:Connect(function()
 		pcall(callback)
 	end)
-	
+
 	local button = {}
 	button.Menu = Button
-	
+
 	table.insert(self.Elements, button)
-	
+
 	return button
 end
 
@@ -349,7 +355,7 @@ function configBase:AddSlider(name: string, min: number, max: number, default: n
 	Corner.CornerRadius = UDim.new(0, 2)
 	Corner.Name = "Corner"
 	Corner.Parent = Slider
-	
+
 	Label.Name = "Label"
 	Label.Parent = Slider
 	Label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -360,7 +366,7 @@ function configBase:AddSlider(name: string, min: number, max: number, default: n
 	Label.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Label.TextSize = 17.000
 	Label.TextWrapped = true
-	
+
 	Slide.Name = "Slide"
 	Slide.Parent = Slider
 	Slide.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
@@ -369,39 +375,39 @@ function configBase:AddSlider(name: string, min: number, max: number, default: n
 	Slide.ZIndex = -2
 
 	local connection = nil
-	
+
 	local slider = {}
 	slider.Menu = Slider
 	slider.Value = default or min
-	
+
 	Slider.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			windowC.ComponentDragging = true
-			
+
 			connection = RunService.RenderStepped:Connect(function(dt)
 				local position = UserInputService:GetMouseLocation()
 				local delta = math.clamp((position.X - Slider.AbsolutePosition.X) / Slider.AbsoluteSize.X, 0, 1)
-				
+
 				slider.Value = min + (max - min) * delta
-				
+
 				TweenService:Create(Slide, TweenInfo.new(0.1, Enum.EasingStyle.Quart), {Size = UDim2.new(delta, 0, 1, 0)}):Play()
 				Label.Text = string.format("%s - %.2f", name, min + (max - min) * Slide.Size.X.Scale) -- it looks cooler ok
-				
+
 				pcall(callback, slider.Value)
 			end)
 		end
 	end)
-	
+
 	Slider.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
 			windowC.ComponentDragging = false
-			
+
 			connection:Disconnect()
 		end
 	end)
-	
+
 	table.insert(self.Elements, slider)
-	
+
 	return slider
 end
 
@@ -411,14 +417,14 @@ function configBase:AddToggle(name: string, default: boolean, callback: (boolean
 	local Display = Instance.new("Frame")
 	local Padding = Instance.new("UIPadding")
 	local Button = Instance.new("TextButton")
-	
+
 	Toggle.Name = "Toggle"
 	Toggle.Parent = self.Menu
 	Toggle.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 	Toggle.BackgroundTransparency = 1.000
 	Toggle.ClipsDescendants = true
 	Toggle.Size = UDim2.new(1, 0, 0, 20)
-	
+
 	Label.Name = "Label"
 	Label.Parent = Toggle
 	Label.AnchorPoint = Vector2.new(1, 0)
@@ -432,7 +438,7 @@ function configBase:AddToggle(name: string, default: boolean, callback: (boolean
 	Label.TextSize = 14.000
 	Label.TextWrapped = true
 	Label.TextXAlignment = Enum.TextXAlignment.Left
-	
+
 	Display.Name = "Display"
 	Display.Parent = Toggle
 	Display.AnchorPoint = Vector2.new(0, 0.5)
@@ -441,11 +447,11 @@ function configBase:AddToggle(name: string, default: boolean, callback: (boolean
 	Display.BorderSizePixel = 1
 	Display.Position = UDim2.new(0, 0, 0.5, 0)
 	Display.Size = UDim2.new(0, 10, 0, 10)
-	
+
 	Padding.Name = "Padding"
 	Padding.Parent = Toggle
 	Padding.PaddingLeft = UDim.new(0, 4)
-	
+
 	Button.Name = "Button"
 	Button.Parent = Toggle
 	Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -458,22 +464,21 @@ function configBase:AddToggle(name: string, default: boolean, callback: (boolean
 	Button.Text = ""
 	Button.TextColor3 = Color3.fromRGB(0, 0, 0)
 	Button.TextSize = 1.000
-	
+
 	local toggle = {}
 	toggle.Menu = Toggle
 	toggle.Value = default or false
-	
+
 	Button.MouseButton1Click:Connect(function()
 		toggle.Value = not toggle.Value
-		
+
 		TweenService:Create(Display, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {BackgroundColor3 = (toggle.Value and Color3.fromRGB(101, 119, 240) or Color3.fromRGB(58, 58, 58))}):Play()
-		
+
 		pcall(callback, toggle.Value)
 	end)
-	
+
 	table.insert(self.Elements, toggle)
-	
-	
+
 	return toggle
 end
 
@@ -508,39 +513,39 @@ function configBase:AddTextbox(name: string, callback: (string) -> nil)
 	TextBox.Text = ""
 	TextBox.TextColor3 = Color3.fromRGB(243, 243, 243)
 	TextBox.TextSize = 14.000
-	
+
 	local textbox = {}
 	textbox.Menu = Textbox
 	textbox.Value = ""
-	
+
 	TextBox.FocusLost:Connect(function()
 		textbox.Value = TextBox.Text
-		
+
 		pcall(callback, textbox.Value)
 	end)
-	
+
 	table.insert(self.Elements, textbox)
-	
+
 	return textbox
 end
 
 function configBase:InsertCustomGui(gui: GuiBase) -- basically the same as reparenting straight to self.Menu
 	gui.Parent = self.Menu
-	
+
 	local connection
 	connection = gui:GetPropertyChangedSignal("Parent"):Connect(function()
 		connection:Disconnect()
-		
+
 		table.remove(self.Elements, table.find(self.Elements, gui))
 	end)
-	
+
 	table.insert(self.Elements, gui)
 end
 
 function configBase:AddSection(name: string, position: UDim2, size: UDim2)
 	if not (self.Sectioned == false and #self.Elements > 0) then
 		self.Sectioned = true
-		
+
 		local SectionMenu = Instance.new("Frame")
 		local Title = Instance.new("TextLabel")
 		local Items = Instance.new("Frame")
@@ -586,13 +591,13 @@ function configBase:AddSection(name: string, position: UDim2, size: UDim2)
 		Padding.PaddingLeft = UDim.new(0, 3)
 		Padding.PaddingRight = UDim.new(0, 3)
 		Padding.PaddingTop = UDim.new(0, 3)
-		
+
 		local section = setmetatable({}, configBase)
 		section.Elements = {}
 		section.Menu = Items
-		
+
 		table.insert(self.Elements, section)
-		
+
 		return section
 	else
 		error("Can't have section and non-section elements in the same tab.")
