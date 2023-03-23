@@ -545,65 +545,61 @@ function configBase:InsertCustomGui(gui: GuiBase) -- basically the same as repar
 end
 
 function configBase:AddSection(name: string, position: UDim2, size: UDim2)
-	if not (self.Sectioned == false and #self.Elements > 0) then
-		self.Sectioned = true
+	self.Sectioned = true
 
-		local SectionMenu = Instance.new("Frame")
-		local Title = Instance.new("TextLabel")
-		local Items = Instance.new("Frame")
-		local List = Instance.new("UIListLayout")
-		local Padding = Instance.new("UIPadding")
+	local SectionMenu = Instance.new("Frame")
+	local Title = Instance.new("TextLabel")
+	local Items = Instance.new("Frame")
+	local List = Instance.new("UIListLayout")
+	local Padding = Instance.new("UIPadding")
 
-		SectionMenu.Name = "Section"
-		SectionMenu.Parent = self.Menu
-		SectionMenu.BackgroundColor3 = Color3.fromRGB(62, 62, 62)
-		SectionMenu.BorderColor3 = Color3.fromRGB(46, 46, 46)
-		SectionMenu.BorderSizePixel = 2
-		SectionMenu.ClipsDescendants = true
-		SectionMenu.Size = size or UDim2.new(0, 100, 0, 100)
-		SectionMenu.Position = position or UDim2.new(0, 0, 0, 0)
+	SectionMenu.Name = "Section"
+	SectionMenu.Parent = self.Menu
+	SectionMenu.BackgroundColor3 = Color3.fromRGB(62, 62, 62)
+	SectionMenu.BorderColor3 = Color3.fromRGB(46, 46, 46)
+	SectionMenu.BorderSizePixel = 2
+	SectionMenu.ClipsDescendants = true
+	SectionMenu.Size = size or UDim2.new(0, 100, 0, 100)
+	SectionMenu.Position = position or UDim2.new(0, 0, 0, 0)
 
-		Title.Name = "Title"
-		Title.Parent = SectionMenu
-		Title.AnchorPoint = Vector2.new(0.5, 0)
-		Title.BackgroundColor3 = Color3.fromRGB(62, 62, 62)
-		Title.BorderSizePixel = 0
-		Title.Position = UDim2.new(0.5, 0, 0, 0)
-		Title.Size = UDim2.new(0, 50, 0, 15)
-		Title.Font = Enum.Font.SourceSans
-		Title.Text = name
-		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Title.TextSize = 16.000
+	Title.Name = "Title"
+	Title.Parent = SectionMenu
+	Title.AnchorPoint = Vector2.new(0.5, 0)
+	Title.BackgroundColor3 = Color3.fromRGB(62, 62, 62)
+	Title.BorderSizePixel = 0
+	Title.Position = UDim2.new(0.5, 0, 0, 0)
+	Title.Size = UDim2.new(0, 50, 0, 15)
+	Title.Font = Enum.Font.SourceSans
+	Title.Text = name
+	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Title.TextSize = 16.000
 
-		Items.Name = "Items"
-		Items.Parent = SectionMenu
-		Items.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Items.BackgroundTransparency = 1.000
-		Items.Position = UDim2.new(0, 0, 0, 15)
-		Items.Size = UDim2.new(1, 0, 1, -15)
+	Items.Name = "Items"
+	Items.Parent = SectionMenu
+	Items.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Items.BackgroundTransparency = 1.000
+	Items.Position = UDim2.new(0, 0, 0, 15)
+	Items.Size = UDim2.new(1, 0, 1, -15)
 
-		List.Name = "List"
-		List.Parent = Items
-		List.SortOrder = Enum.SortOrder.LayoutOrder
-		List.Padding = UDim.new(0, 5)
+	List.Name = "List"
+	List.Parent = Items
+	List.SortOrder = Enum.SortOrder.LayoutOrder
+	List.Padding = UDim.new(0, 5)
 
-		Padding.Name = "Padding"
-		Padding.Parent = Items
-		Padding.PaddingBottom = UDim.new(0, 3)
-		Padding.PaddingLeft = UDim.new(0, 3)
-		Padding.PaddingRight = UDim.new(0, 3)
-		Padding.PaddingTop = UDim.new(0, 3)
+	Padding.Name = "Padding"
+	Padding.Parent = Items
+	Padding.PaddingBottom = UDim.new(0, 3)
+	Padding.PaddingLeft = UDim.new(0, 3)
+	Padding.PaddingRight = UDim.new(0, 3)
+	Padding.PaddingTop = UDim.new(0, 3)
 
-		local section = setmetatable({}, configBase)
-		section.Elements = {}
-		section.Menu = Items
+	local section = setmetatable({}, configBase)
+	section.Elements = {}
+	section.Menu = Items
 
-		table.insert(self.Elements, section)
+	table.insert(self.Elements, section)
 
-		return section
-	else
-		error("Can't have section and non-section elements in the same tab.")
-	end
+	return section
 end
 
 return windowC
