@@ -171,7 +171,7 @@ library.Slider = nil
 
 -- ELEMENTS --
 
-function base:AddSection(name: string, position: UDim2, size: UDim2)
+function base:AddSection(name, position, size)
 	if self.IsSection then
 		warn("Can't have sections within sections.")
 		return self
@@ -230,7 +230,7 @@ function base:AddSection(name: string, position: UDim2, size: UDim2)
 	return section
 end
 
-function base:AddToggle(name: string, default: boolean, callback: (boolean) -> nil)
+function base:AddToggle(name, default, callback)
 	if not self.IsSection then
 		return
 	end
@@ -300,7 +300,7 @@ function base:AddToggle(name: string, default: boolean, callback: (boolean) -> n
 	return toggle
 end
 
-function base:AddDivider(text: string)
+function base:AddDivider(text)
 	if not self.IsSection then
 		return
 	end
@@ -345,7 +345,7 @@ function base:AddDivider(text: string)
 	return divider
 end
 
-function base:AddLabel(text: string)
+function base:AddLabel(text)
 	if not self.IsSection then
 		return
 	end
@@ -391,7 +391,7 @@ function base:AddLabel(text: string)
 	return label
 end
 
-function base:AddButton(name: string, callback: () -> nil)
+function base:AddButton(name, callback)
 	if not self.IsSection then
 		return
 	end
@@ -453,7 +453,7 @@ function base:AddButton(name: string, callback: () -> nil)
 	table.insert(library.Theme, textbutton)
 end
 
-function base:AddTextbox(name: string, callback: (string) -> nil)
+function base:AddTextbox(name, callback)
 	if not self.IsSection then
 		return
 	end
@@ -535,7 +535,7 @@ function base:AddTextbox(name: string, callback: (string) -> nil)
 	return textbox
 end
 
-function base:AddSlider(name: string, default: number, min: number, max: number, callback: (number) -> nil)
+function base:AddSlider(name, default, min, max, callback)
 	if not self.IsSection then
 		return
 	end
@@ -626,7 +626,7 @@ function base:AddSlider(name: string, default: number, min: number, max: number,
 	return slider
 end
 
-function base:AddDropdown(name: string, values: {any}, callback: (any) -> nil)
+function base:AddDropdown(name, values, callback)
 	if not self.IsSection then
 		return
 	end
@@ -815,7 +815,7 @@ end
 
 -- MAIN --
 
-function library:Init(title: string)
+function library:Init(title, toggleKey)
 	creator:Clear()
 
 	math.randomseed(GetSeed(title))
@@ -1026,6 +1026,12 @@ function library:Init(title: string)
 		return self
 	end
 
+	creator:Connect(UserInputService.InputBegan, function(input: InputObject)
+		if input.KeyCode == toggleKey then
+			window.Main.Visible = not window.Main.Visible
+		end
+	end)
+
 	creator:Connect(UserInputService.InputChanged, function(input)
 		if input.UserInputType == Enum.UserInputType.MouseMovement then
 			if window.Dragging then
@@ -1058,7 +1064,7 @@ function library:Init(title: string)
 	return window
 end
 
-function library:ApplyThemeColor(color: Color3?)
+function library:ApplyThemeColor(color)
 	self.Colors.Theme = color or self.Colors.Theme
 
 	for i, object in pairs(self.Theme) do
