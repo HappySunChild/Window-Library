@@ -742,7 +742,7 @@ function base:AddDropdown(name, values, callback)
 
 	function dropdown:SetValue(value)
 		dropdown.Value = value
-		listbutton.Text = totext(value)
+		listbutton.Text = " " .. totext(value)
 
 		if callback then
 			pcall(callback, value)
