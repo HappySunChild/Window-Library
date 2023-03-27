@@ -16,7 +16,7 @@ local function RandomString()
 	return str
 end
 
-local function GetSeed(str: string)
+local function GetSeed(str)
 	local seed = 0
 
 	for i, byte in pairs({string.byte(str, 1, -1)}) do
@@ -40,7 +40,7 @@ local function lerp(a, b, t)
 	return a + (b - a) * t
 end
 
-local function totext(value: any)
+local function totext(value)
 	if typeof(value) == "Instance" then
 		return value:GetFullName()
 	end
@@ -48,13 +48,13 @@ local function totext(value: any)
 	return tostring(value)
 end
 
-local function GetBrightness(color: Color3)
+local function GetBrightness(color)
 	local _, _, brightness = color:ToHSV()
 
 	return brightness
 end
 
-local function SubtractColors(colorA: Color3, colorB: Color3)
+local function SubtractColors(colorA, colorB)
 	return Color3.new(math.clamp(colorA.R - colorB.R, 0, 1), math.clamp(colorA.G - colorB.G, 0, 1), math.clamp(colorA.B - colorB.B, 0, 1))
 end
 
@@ -93,7 +93,7 @@ function creator:Connect(event, callback)
 	table.insert(creator.Connections, event:Connect(callback))
 end
 
-function creator:Hover(guiobject, arguments: {Hover: GuiObject, DefaultColor: Color3, HoverColor: Color3, Property: string})
+function creator:Hover(guiobject, arguments)
 	arguments = arguments or {}
 
 	local property = arguments.Property or "BorderColor3"
@@ -478,6 +478,7 @@ function base:AddTextbox(name, callback)
 		Size = UDim2.new(1, -4, 1, 0),
 		BackgroundTransparency = 1,
 		TextSize = 15,
+		Text = "",
 		Font = Enum.Font.Code,
 		TextColor3 = Color3.new(1, 1, 1),
 		TextXAlignment = Enum.TextXAlignment.Left,
@@ -631,7 +632,7 @@ function base:AddDropdown(name, values, callback)
 		return
 	end
 
-	local main : Frame = creator:Create("Frame", {
+	local main = creator:Create("Frame", {
 		LayoutOrder = #self.Elements + 1,
 		Size = UDim2.new(1, -6, 0, name and 48 or 30),
 		BackgroundTransparency = 1,
@@ -736,7 +737,7 @@ function base:AddDropdown(name, values, callback)
 		holder.Visible = false
 	end
 
-	function dropdown:SetValue(value: any)
+	function dropdown:SetValue(value)
 		dropdown.Value = value
 
 		if callback then
@@ -744,7 +745,7 @@ function base:AddDropdown(name, values, callback)
 		end
 	end
 	
-	function dropdown:AddValue(value: any)
+	function dropdown:AddValue(value)
 		if table.find(self.Values, value) then
 			return false
 		end
@@ -768,7 +769,7 @@ function base:AddDropdown(name, values, callback)
 
 		creator:Hover(label, {Property = "TextColor3", HoverColor = library.Colors.Theme})
 
-		creator:Connect(label.InputBegan, function(input: InputObject)
+		creator:Connect(label.InputBegan, function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
 				self:SetValue(value)
 				self:Close()
@@ -776,7 +777,7 @@ function base:AddDropdown(name, values, callback)
 		end)
 	end
 
-	function dropdown:RemoveValue(value: any)
+	function dropdown:RemoveValue(value)
 		local label = self.Labels[value]
 
 		if label then
@@ -933,7 +934,7 @@ function library:Init(title, toggleKey)
 
 	self:ApplyThemeColor()
 
-	function window:AddTab(text: string)
+	function window:AddTab(text)
 		math.randomseed(GetSeed(text))
 
 		local button = creator:Create("TextButton", {
@@ -1026,7 +1027,7 @@ function library:Init(title, toggleKey)
 		return self
 	end
 
-	creator:Connect(UserInputService.InputBegan, function(input: InputObject)
+	creator:Connect(UserInputService.InputBegan, function(input)
 		if input.KeyCode == toggleKey then
 			window.Main.Visible = not window.Main.Visible
 		end
