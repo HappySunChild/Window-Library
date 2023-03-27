@@ -1,5 +1,6 @@
 local Player = game:GetService("Players").LocalPlayer
 
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local TextService = game:GetService("TextService")
@@ -40,9 +41,11 @@ local function lerp(a, b, t)
 	return a + (b - a) * t
 end
 
-local function totext(value)
+local function totext(value: Instance)
 	if typeof(value) == "Instance" then
-		return value:GetFullName()
+		if not value:IsDescendantOf(Players) then
+			return value:GetFullName()
+		end
 	end
 
 	return tostring(value)
@@ -739,6 +742,7 @@ function base:AddDropdown(name, values, callback)
 
 	function dropdown:SetValue(value)
 		dropdown.Value = value
+		listbutton.Text = totext(value)
 
 		if callback then
 			pcall(callback, value)
