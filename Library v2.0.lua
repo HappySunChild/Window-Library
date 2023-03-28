@@ -647,7 +647,7 @@ function base:AddDropdown(name, values, callback)
 		Size = UDim2.new(1, -6, 0, 22),
 		BackgroundColor3 = SubtractColors(library.Colors.Main, Color3.fromRGB(-20, -20, -20)),
 		BorderColor3 = Color3.new(0, 0, 0),
-		Text = " " .. table.concat(values, ", "),
+		Text = " " .. totext(values[1] or "..."),
 		TextSize = 15,
 		Font = Enum.Font.Code,
 		TextColor3 = Color3.new(1, 1, 1),
