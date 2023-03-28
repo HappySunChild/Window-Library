@@ -792,13 +792,17 @@ function base:AddDropdown(name, values, callback)
 	end
 
 	creator:Connect(listbutton.MouseButton1Click, function()
-		TweenService:Create(arrow, TweenInfo.new(0.2), {Rotation = -90}):Play()
+		if not dropdown.Open then
+			TweenService:Create(arrow, TweenInfo.new(0.2), {Rotation = -90}):Play()
 
-		dropdown.Open = true
-		
-		local apos = main.AbsolutePosition
-		holder.Position = UDim2.fromOffset(apos.X + 6, apos.Y + (name and 84 or 66) - 4)
-		holder.Visible = true
+			dropdown.Open = true
+			
+			local apos = main.AbsolutePosition
+			holder.Position = UDim2.fromOffset(apos.X + 6, apos.Y + (name and 84 or 66) - 4)
+			holder.Visible = true
+		else
+			dropdown:Close()
+		end
 	end)
 
 	for i, v in pairs(values) do
