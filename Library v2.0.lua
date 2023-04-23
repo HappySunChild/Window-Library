@@ -1097,7 +1097,7 @@ function library:Init(title, toggleKey, hasSettingsTab)
 
 	if hasSettingsTab or hasSettingsTab == nil then
 		local settingsTab = window:AddTab("Window Settings")
-		settingsTab.Menu.LayoutOrder = 9e9
+		settingsTab.Menu.LayoutOrder = 9e5
 
 		local appearanceSection = settingsTab:AddSection("Menu", UDim2.new(0, 0, 0, 0), UDim2.new(0.5, 0, 1, 0))
 		appearanceSection:AddDropdown("Select Background", {"Floral", "Flowers", "Circles", "Hearts", "Mountains", "Zigzag", "Zigzag 2", "Tartan", "Roses", "Hexagons"}, function(value)
