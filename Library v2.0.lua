@@ -1091,7 +1091,9 @@ function library:Init(title, toggleKey, hasSettingsTab)
 	if hasSettingsTab or hasSettingsTab == nil then
 		local settingsTab = window:AddTab("Window Settings")
 		settingsTab.Menu.LayoutOrder = 9e9
-		settingsTab:AddDropdown("Select Background", {"Floral", "Flowers", "Circles", "Hearts", "Polka dots", "Mountains", "Zigzag", "Zigzag 2", "Tartan", "Roses", "Hexagons", "Leopard print"}, function(value)
+
+		local appearanceSection = settingsTab:AddSection("Menu", UDim2.new(0, 0, 0, 0), UDim2.new(0.5, 0, 1, 0))
+		appearanceSection:AddDropdown("Select Background", {"Floral", "Flowers", "Circles", "Hearts", "Polka dots", "Mountains", "Zigzag", "Zigzag 2", "Tartan", "Roses", "Hexagons", "Leopard print"}, function(value)
 			if library.Backgrounds[value] then
 				window.Main.Image = "rbxassetid://" .. library.Backgrounds[value]
 			end
