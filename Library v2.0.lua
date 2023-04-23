@@ -119,6 +119,7 @@ end
 
 function creator:Border(guiobject)
 	local border1 = creator:Create("ImageLabel", {
+		ZIndex = 200,
 		Size = UDim2.fromScale(1, 1),
 		BackgroundTransparency = 1,
 		Image = creator.BorderId,
@@ -130,6 +131,7 @@ function creator:Border(guiobject)
 	})
 
 	local border2 = creator:Create("ImageLabel", {
+		ZIndex = 200,
 		Size = UDim2.new(1, -2, 1, -2),
 		Position = UDim2.fromOffset(1, 1),
 		BackgroundTransparency = 1,
@@ -176,14 +178,12 @@ library.Backgrounds = {
 	["Flowers"] = 6071575925,
 	["Circles"] = 6071579801,
 	["Hearts"] = 6073763717,
-	["Polka dots"] = 6214418014,
 	["Mountains"] = 6214412460,
 	["Zigzag"] = 6214416834,
 	["Zigzag 2"] = 6214375242,
 	["Tartan"] = 6214404863,
 	["Roses"] = 6214374619,
 	["Hexagons"] = 6214320051,
-	["Leopard print"] = 6214318622
 }
 
 -- ELEMENTS --
@@ -229,7 +229,7 @@ function base:AddSection(name, position, size)
 		TextSize = 15,
 		Font = Enum.Font.Code,
 		TextColor3 = Color3.new(1, 1, 1),
-		ZIndex = 5,
+		ZIndex = 300,
 		Parent = menu
 	})
 
@@ -683,18 +683,17 @@ function base:AddDropdown(name, values, callback)
 		Parent = listbutton
 	})
 
-	local holder = creator:Create("TextButton", {
+	local holder = creator:Create("Frame", {
 		ZIndex = 100,
+		Size = UDim2.new(0, listbutton.AbsoluteSize.X, 0, 100),
 		BackgroundColor3 = SubtractColors(library.Colors.Main, Color3.fromRGB(-10, -10, -10)),
 		BorderColor3 = Color3.new(0, 0, 0),
-		Text = "",
-		AutoButtonColor = false,
 		Visible = false,
 		Parent = library.Base
 	})
 
 	local content = creator:Create("ScrollingFrame", {
-		ZIndex = 100,
+		ZIndex = 0,
 		Size = UDim2.new(1, 0, 1, 0),
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
@@ -713,6 +712,7 @@ function base:AddDropdown(name, values, callback)
 	creator:Create("UIPadding", {
 		PaddingTop = UDim.new(0, 4),
 		PaddingBottom = UDim.new(0, 4),
+		PaddingLeft = UDim.new(0, 3),
 		Parent = content
 	})
 
@@ -723,6 +723,7 @@ function base:AddDropdown(name, values, callback)
 
 	creator:Border(holder)
 	creator:Border(listbutton)
+	creator:Hover(holder, {HoverColor = library.Colors.Theme})
 	creator:Hover(listbutton, {HoverColor = library.Colors.Theme})
 
 	if name then
@@ -812,7 +813,7 @@ function base:AddDropdown(name, values, callback)
 			dropdown.Open = true
 			
 			local apos = main.AbsolutePosition
-			holder.Position = UDim2.fromOffset(apos.X + 6, apos.Y + (name and 84 or 66) - 4)
+			holder.Position = UDim2.fromOffset(apos.X + 6, apos.Y + (name and 84 or 66) - 1)
 			holder.Visible = true
 		else
 			dropdown:Close()
@@ -854,7 +855,13 @@ function library:Init(title, toggleKey, hasSettingsTab)
 	window.Dragging = false
 	window.DragOffset = Vector2.new(0, 0)
 	
-	window.Gui = creator:Create("ScreenGui", {IgnoreGuiInset = true, ZIndexBehavior = Enum.ZIndexBehavior.Global, DisplayOrder = 10000000, Parent = CoreGui, Name = name})
+	window.Gui = creator:Create("ScreenGui", {
+		IgnoreGuiInset = true, 
+		ZIndexBehavior = Enum.ZIndexBehavior.Sibling, 
+		DisplayOrder = 5e5, 
+		Parent = CoreGui, 
+		Name = name
+	})
 	window.Main = creator:Create("ImageLabel", {
 		Position = UDim2.fromOffset(100, 100),
 		Size = self.BaseSize,
@@ -1093,7 +1100,7 @@ function library:Init(title, toggleKey, hasSettingsTab)
 		settingsTab.Menu.LayoutOrder = 9e9
 
 		local appearanceSection = settingsTab:AddSection("Menu", UDim2.new(0, 0, 0, 0), UDim2.new(0.5, 0, 1, 0))
-		appearanceSection:AddDropdown("Select Background", {"Floral", "Flowers", "Circles", "Hearts", "Polka dots", "Mountains", "Zigzag", "Zigzag 2", "Tartan", "Roses", "Hexagons", "Leopard print"}, function(value)
+		appearanceSection:AddDropdown("Select Background", {"Floral", "Flowers", "Circles", "Hearts", "Mountains", "Zigzag", "Zigzag 2", "Tartan", "Roses", "Hexagons"}, function(value)
 			if library.Backgrounds[value] then
 				window.Main.Image = "rbxassetid://" .. library.Backgrounds[value]
 			end
