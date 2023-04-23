@@ -908,7 +908,7 @@ function library:Init(title, toggleKey)
 		Parent = tabItems
 	})
 
-	creator:Create("TextLabel", {
+	local titleLabel = creator:Create("TextLabel", {
 		Position = UDim2.new(0, 0, 0, 0),
 		Size = UDim2.new(1, 0, 0, 24),
 		BackgroundTransparency = 1,
@@ -917,8 +917,12 @@ function library:Init(title, toggleKey)
 		TextSize = 18,
 		TextColor3 = Color3.new(1, 1, 1),
 		TextXAlignment = Enum.TextXAlignment.Left,
-		Name = "Title",
 		Parent = topbar
+	})
+
+	creator:Create("UIPadding", {
+		PaddingLeft = UDim.new(0, 2),
+		Parent = titleLabel
 	})
 
 	creator:Create("Frame", {
