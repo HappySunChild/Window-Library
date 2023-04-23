@@ -171,6 +171,20 @@ library.Theme = {}
 library.Creator = creator
 library.Base = nil
 library.Slider = nil
+library.Backgrounds = {
+	["Floral"] = 5553946656,
+	["Flowers"] = 6071575925,
+	["Circles"] = 6071579801,
+	["Hearts"] = 6073763717,
+	["Polka dots"] = 6214418014,
+	["Mountains"] = 6214412460,
+	["Zigzag"] = 6214416834,
+	["Zigzag 2"] = 6214375242,
+	["Tartan"] = 6214404863,
+	["Roses"] = 6214374619,
+	["Hexagons"] = 6214320051,
+	["Leopard print"] = 6214318622
+}
 
 -- ELEMENTS --
 
@@ -824,7 +838,7 @@ end
 
 -- MAIN --
 
-function library:Init(title, toggleKey)
+function library:Init(title, toggleKey, hasSettingsTab)
 	creator:Clear()
 
 	math.randomseed(GetSeed(title))
@@ -1073,6 +1087,15 @@ function library:Init(title, toggleKey)
 			window.Dragging = false
 		end
 	end)
+
+	if hasSettingsTab or hasSettingsTab == nil then
+		local settingsTab = window:AddTab("Window Settings")
+		settingsTab:AddDropdown("Select Background", {"Floral", "Flowers", "Circles", "Hearts", "Polka dots", "Mountains", "Zigzag", "Zigzag 2", "Tartan", "Roses", "Hexagons", "Leopard print"}, function(value)
+			if library.Backgrounds[value] then
+				window.Main.Image = "rbxassetid://" .. library.Backgrounds[value]
+			end
+		end)
+	end
 
 	return window
 end
