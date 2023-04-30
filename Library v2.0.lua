@@ -901,7 +901,7 @@ function library:Init(title, toggleKey, hasSettingsTab)
 	local tabList = creator:Create("UIListLayout", {
 		FillDirection = Enum.FillDirection.Horizontal,
 		SortOrder = Enum.SortOrder.LayoutOrder,
-		Padding = UDim.new(0, 1),
+		Padding = UDim.new(0, 3),
 		Parent = tabScroll
 	})
 
@@ -967,7 +967,7 @@ function library:Init(title, toggleKey, hasSettingsTab)
 
 	self:ApplyThemeColor()
 
-	function window:AddTab(text)
+	function window:AddTab(text, forceSelect)
 		math.randomseed(GetSeed(text))
 
 		local button = creator:Create("TextButton", {
@@ -1053,6 +1053,8 @@ function library:Init(title, toggleKey, hasSettingsTab)
 
 		if #window.Tabs == 0 then
 			self:Select()
+		elseif forceSelect then
+			self:Select()
 		end
 
 		table.insert(window.Tabs, self)
@@ -1096,7 +1098,7 @@ function library:Init(title, toggleKey, hasSettingsTab)
 	end)
 
 	if hasSettingsTab or hasSettingsTab == nil then
-		local settingsTab = window:AddTab("Window Settings")
+		local settingsTab = window:AddTab("Window Settings", false)
 		settingsTab.Menu.LayoutOrder = 9e5
 
 		local appearanceSection = settingsTab:AddSection("Menu", UDim2.new(0, 0, 0, 0), UDim2.new(0.5, 0, 1, 0))
