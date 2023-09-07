@@ -1,5 +1,7 @@
 # Documentation
 
+too lazy to complete lol deal with it 
+
 ### element
 - Menu `frame`
 ---
